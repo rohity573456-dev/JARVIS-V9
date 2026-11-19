@@ -1,0 +1,41 @@
+
+name: JARVIS APK Builder
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**.zip'
+      - '.github/workflows/build-apk.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Extract project
+        run: |
+          unzip -o JARVIS_V9_3_GEMINI_GROQ_HYBRID_SOURCE.zip -d project
+
+      - name: Build APK
+        run: |
+          cd project/JARVIS_V8
+          gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: JARVIS-APK
+          path: project/JARVIS_V8/app/build/outputs/apk/debug/*.apk
+          
