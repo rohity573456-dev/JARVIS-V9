@@ -5,7 +5,8 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - '**.zip'
+      - '*.zip'
+      - '**/*.zip'
       - '.github/workflows/build-apk.yml'
 
 jobs:
@@ -31,8 +32,10 @@ jobs:
         run: |
           unzip -o JARVIS_V9_3_GEMINI_GROQ_HYBRID_SOURCE.zip -d project
 
-      - name: Fix Java Kotlin JVM targets
+      - name: Upgrade Kotlin and Java compatibility
         run: |
+          sed -i "s/2.1.20/2.3.0/g" project/JARVIS_V8/build.gradle
+
           python3 - <<'PY'
           from pathlib import Path
 
@@ -65,4 +68,6 @@ jobs:
         with:
           name: JARVIS-APK
           path: project/JARVIS_V8/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
           
